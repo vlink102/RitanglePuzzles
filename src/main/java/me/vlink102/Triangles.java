@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class Triangles {
@@ -21,8 +22,9 @@ public class Triangles {
     public static final int[] TRIANGULAR_NUMBERS = {0, 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190, 210, 231, 253, 276, 300, 325, 351, 378, 406, 435, 465, 496, 528, 561, 595, 630, 666, 703, 741, 780, 820, 861, 903, 946, 990, 1035, 1081};
 
     public Triangles() throws IOException {
-        //printTriangles(new int[4][6]);
-        computeTriangles();
+        printTriangles(new int[4][6]);
+        //computeTriangles();
+        findSolution();
         System.out.println("Complete");
     }
 
@@ -51,6 +53,7 @@ public class Triangles {
         }
         return value;
     }
+
     public static int extractVector(GridPoint from, GridPoint to, Integer[][] grid) {
         if (from.row != to.row && from.col != to.col) throw new IllegalArgumentException("Must be a straight vector");
         int digitCount = from.row == to.row ? Math.abs(to.col - from.col) + 1 : Math.abs(to.row - from.row) + 1;
@@ -90,7 +93,7 @@ public class Triangles {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(background, 0,0, 339, 331, this);
+                g.drawImage(background, 0, 0, 339, 331, this);
             }
         };
         panel.setLayout(new GridBagLayout());
@@ -118,7 +121,7 @@ public class Triangles {
                 cell.setOpaque(false);
                 cell.setBorder(null);
                 cell.setHorizontalAlignment(JTextField.RIGHT);
-                cell.setBackground(new Color(0,0,0,0));
+                cell.setBackground(new Color(0, 0, 0, 0));
                 cell.setFont(new Font("Arial", Font.BOLD, 40));
 
                 cell.addKeyListener(new KeyAdapter() {
@@ -262,7 +265,7 @@ public class Triangles {
                                                                                                                         int nineDown = (100 * b5) + (10 * c5) + d5;
 
                                                                                                                         if (isPrimitivePythagoreanTriangle(fourteenAcross, nineDown, fiveDown)) {
-                                                                                                                            printTriangleConsole(new Integer[][] {
+                                                                                                                            printTriangleConsole(new Integer[][]{
                                                                                                                                     {a1, a2, a3, a4, a5, a6},
                                                                                                                                     {b1, b2, b3, b4, b5, b6},
                                                                                                                                     {c1, c2, c3, c4, c5, c6},
@@ -309,7 +312,7 @@ public class Triangles {
         return digits;
     }
 
-    public  void printTriangleConsole(Integer[][] grid) {
+    public void printTriangleConsole(Integer[][] grid) {
         System.out.print(getResult(grid));
         System.out.print(Arrays.deepToString(grid) + "\n");
     }
@@ -321,6 +324,7 @@ public class Triangles {
         }
         return array;
     }
+
     @Setter
     @Getter
     public class ValidationResult {
@@ -330,7 +334,9 @@ public class Triangles {
         private boolean ac13dn7dn1;
         private boolean ac14dn9dn5;
 
-        public ValidationResult() {}
+        public ValidationResult() {
+        }
+
         public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
         public static final String TRUE = "\u001B[32mTRUE\u001B[0m";
 
@@ -344,25 +350,125 @@ public class Triangles {
         }
     }
 
+    private static final Integer[][][] solutions = {
+            {{5, 1, 7, 7, 2, 5}, {2, 6, 0, 3, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 1, 7, 7, 2, 5}, {2, 6, 1, 2, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 1, 7, 7, 2, 5}, {2, 6, 2, 1, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 0, 6, 6, 2}, {1, 7, 6, 3, 7, 6}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 1, 5, 6, 2}, {1, 7, 6, 3, 7, 6}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 2, 4, 6, 2}, {1, 7, 6, 3, 7, 6}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 3, 3, 6, 2}, {1, 7, 6, 3, 7, 6}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 4, 2, 6, 2}, {1, 7, 6, 3, 7, 6}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 5, 1, 6, 2}, {1, 7, 6, 3, 7, 6}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 4, 9, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 5, 8, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 6, 7, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 7, 6, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 8, 5, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{5, 7, 4, 9, 6, 5}, {2, 6, 9, 4, 6, 2}, {3, 7, 7, 7, 7, 8}, {6, 7, 5, 6, 7, 5}},
+            {{7, 7, 2, 5, 5, 1}, {6, 3, 4, 9, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 2, 5, 5, 1}, {6, 3, 5, 8, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 2, 5, 5, 1}, {6, 3, 6, 7, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 2, 5, 5, 1}, {6, 3, 7, 6, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 2, 5, 5, 1}, {6, 3, 8, 5, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 2, 5, 5, 1}, {6, 3, 9, 4, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 0, 9, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 1, 8, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 2, 7, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 3, 6, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 4, 5, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 5, 4, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 6, 3, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 7, 2, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 8, 1, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 0, 1, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 8, 9, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 2, 5}, {6, 3, 9, 8, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 0, 9, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 1, 8, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 2, 7, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 3, 6, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 4, 5, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 5, 4, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 6, 3, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 7, 2, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 8, 1, 6, 2}, {5, 6, 2, 8, 7, 4}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 0, 1, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 8, 9, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 6, 9, 8, 5}, {6, 3, 9, 8, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 8, 1, 9, 5}, {6, 3, 0, 5, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 8, 1, 9, 5}, {6, 3, 1, 4, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 8, 1, 9, 5}, {6, 3, 2, 3, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 8, 1, 9, 5}, {6, 3, 3, 2, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 8, 1, 9, 5}, {6, 3, 4, 1, 6, 2}, {3, 6, 5, 6, 7, 6}, {3, 5, 7, 6, 7, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 2, 9, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 3, 8, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 4, 7, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 5, 6, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 6, 5, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 7, 4, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 8, 3, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}},
+            {{7, 7, 9, 5, 8, 1}, {6, 3, 9, 2, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}}
+    };
+
+    public static void findSolution() {
+        for (Integer[][] grid : solutions) {
+            int oneAcross = extractVector(GridPoint.of(0, 0), GridPoint.of(0, 1), grid);
+            int twoAcross = extractVector(GridPoint.of(0, 2), GridPoint.of(0, 3), grid);
+            int fourAcross = extractVector(GridPoint.of(0, 4), GridPoint.of(0, 5), grid);
+
+            int sixAcross = extractVector(GridPoint.of(1, 0), GridPoint.of(1, 2), grid);
+            int eightAcross = extractVector(GridPoint.of(1, 3), GridPoint.of(1, 5), grid);
+
+            int elevenAcross = extractVector(GridPoint.of(2, 2), GridPoint.of(2, 3), grid);
+            int tenDown = extractVector(GridPoint.of(2, 0), GridPoint.of(3, 0), grid);
+            int twelveDown = extractVector(GridPoint.of(2, 5), GridPoint.of(3, 5), grid);
+
+            int thirteenAcross = extractVector(GridPoint.of(3, 0), GridPoint.of(3, 2), grid);
+            int sevenDown = extractVector(GridPoint.of(1, 1), GridPoint.of(3, 1), grid);
+            int oneDown = extractVector(GridPoint.of(0, 0), GridPoint.of(1, 0), grid);
+
+            int fourteenAcross = extractVector(GridPoint.of(3, 3), GridPoint.of(3, 5), grid);
+            int nineDown = extractVector(GridPoint.of(1, 4), GridPoint.of(3, 4), grid);
+            int fiveDown = extractVector(GridPoint.of(0, 5), GridPoint.of(1, 5), grid);
+
+            int[] answers = {oneAcross, twoAcross, fourAcross, sixAcross, eightAcross, elevenAcross, tenDown, twelveDown, thirteenAcross, sevenDown, oneDown, fourteenAcross, nineDown, fiveDown};
+            if (differs(answers, oneAcross + twoAcross + fourAcross)) {
+                System.out.println(Arrays.deepToString(grid));
+            }
+        }
+    }
+
+    public static boolean differs(int[] array, int difference) {
+        HashSet<Integer> seen = new HashSet<>();
+        for (int i : array) {
+            if (seen.contains(i - difference) || seen.contains(i + difference)) {
+                return true;
+            }
+            seen.add(i);
+        }
+        return false;
+    }
+
     public ValidationResult getResult(Integer[][] grid) {
         if (grid.length != 4 || grid[0].length != 6) return null;
         ValidationResult result = new ValidationResult();
-        int oneAcross = extractVector(GridPoint.of(0,0), GridPoint.of(0, 1), grid);
+        int oneAcross = extractVector(GridPoint.of(0, 0), GridPoint.of(0, 1), grid);
         int twoAcross = extractVector(GridPoint.of(0, 2), GridPoint.of(0, 3), grid);
         int fourAcross = extractVector(GridPoint.of(0, 4), GridPoint.of(0, 5), grid);
 
         int sixAcross = extractVector(GridPoint.of(1, 0), GridPoint.of(1, 2), grid);
-        int eightAcross = extractVector(GridPoint.of(1,3), GridPoint.of(1,5), grid);
+        int eightAcross = extractVector(GridPoint.of(1, 3), GridPoint.of(1, 5), grid);
 
-        int elevenAcross = extractVector(GridPoint.of(2, 2), GridPoint.of(2,3), grid);
-        int tenDown = extractVector(GridPoint.of(2, 0), GridPoint.of(3,0), grid);
+        int elevenAcross = extractVector(GridPoint.of(2, 2), GridPoint.of(2, 3), grid);
+        int tenDown = extractVector(GridPoint.of(2, 0), GridPoint.of(3, 0), grid);
         int twelveDown = extractVector(GridPoint.of(2, 5), GridPoint.of(3, 5), grid);
 
         int thirteenAcross = extractVector(GridPoint.of(3, 0), GridPoint.of(3, 2), grid);
-        int sevenDown = extractVector(GridPoint.of(1,1), GridPoint.of(3, 1), grid);
-        int oneDown = extractVector(GridPoint.of(0,0), GridPoint.of(1,0), grid);
+        int sevenDown = extractVector(GridPoint.of(1, 1), GridPoint.of(3, 1), grid);
+        int oneDown = extractVector(GridPoint.of(0, 0), GridPoint.of(1, 0), grid);
 
-        int fourteenAcross = extractVector(GridPoint.of(3, 3), GridPoint.of(3,5), grid);
+        int fourteenAcross = extractVector(GridPoint.of(3, 3), GridPoint.of(3, 5), grid);
         int nineDown = extractVector(GridPoint.of(1, 4), GridPoint.of(3, 4), grid);
         int fiveDown = extractVector(GridPoint.of(0, 5), GridPoint.of(1, 5), grid);
 
