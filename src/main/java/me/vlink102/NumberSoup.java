@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Function;
 
-public class FinalQuestion {
+public class NumberSoup {
     private static final int[] THREE_DIGIT_HAPPY_NUMBERS = removeContainedZeroes(new int[]{100, 103, 109, 129, 130, 133, 139, 167, 176, 188, 190, 192, 193, 203, 208, 219, 226, 230, 236, 239, 262, 263, 280, 291, 293, 301, 302, 310, 313, 319, 320, 326, 329, 331, 338, 356, 362, 365, 367, 368, 376, 379, 383, 386, 391, 392, 397, 404, 409, 440, 446, 464, 469, 478, 487, 490, 496, 536, 556, 563, 565, 566, 608, 617, 622, 623, 632, 635, 637, 638, 644, 649, 653, 655, 656, 665, 671, 673, 680, 683, 694, 700, 709, 716, 736, 739, 748, 761, 763, 784, 790, 793, 802, 806, 818, 820, 833, 836, 847, 860, 863, 874, 881, 888, 899, 901, 904, 907, 910, 912, 913, 921, 923, 931, 932, 937, 940, 946, 964, 970, 973, 989, 998});
     private static final int[] THREE_DIGIT_LUCKY_NUMBERS = removeContainedZeroes(threeDigitsOnly(generateLuckyNumbers(1000)));
     private static final int[] THREE_DIGIT_CUBES = removeContainedZeroes(new int[]{125, 216, 343, 512, 729});
@@ -31,7 +31,7 @@ public class FinalQuestion {
 
     private static final int[] DIVISIBLE_BY_DIVISORS = {128, 132, 136, 152, 156, 184, 225, 228, 232, 248, 252, 276, 288, 296, 328, 344, 348, 372, 376, 384, 396, 424, 441, 444, 448, 468, 472, 488, 492, 516, 536, 564, 568, 584, 612, 625, 632, 636, 664, 672, 684, 712, 732, 776, 792, 824, 828, 852, 856, 864, 872, 876, 882, 896, 936, 948, 972, 996};//threeDigitsOnly(removeContainedZeroes(divisibleByDivisors()));
 
-    public FinalQuestion() throws IOException {
+    public NumberSoup() throws IOException {
         printNumberSoup(new int[4][9]);
         //numberSoup2();
     }
@@ -39,7 +39,7 @@ public class FinalQuestion {
     public static void main(String[] args) throws IOException {
         printNumberSets();
         runTests();
-        new FinalQuestion();
+        new NumberSoup();
     }
 
     public static void runTests() {
