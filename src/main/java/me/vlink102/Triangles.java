@@ -85,7 +85,7 @@ public class Triangles {
         JFrame frame = new JFrame();
         frame.setPreferredSize(new Dimension(339, 355));
         frame.setResizable(false);
-        frame.setTitle("Number Soup");
+        frame.setTitle("Triangles");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         Container contentPane = frame.getContentPane();
