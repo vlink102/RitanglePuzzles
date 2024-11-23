@@ -333,6 +333,8 @@ public class Triangles {
         private boolean ac11dn10dn12;
         private boolean ac13dn7dn1;
         private boolean ac14dn9dn5;
+        private int sumAcross;
+        private int sumDown;
 
         public ValidationResult() {
         }
@@ -342,7 +344,9 @@ public class Triangles {
 
         @Override
         public String toString() {
-            return (ac1ac2ac4 ? "ac1ac2ac4=" + TRUE : "ac1ac2ac4=" + FALSE) + ", " +
+            return  "Sum Across: " + sumAcross + ", " +
+                    "Sum Down: " + sumDown + ", " +
+                    (ac1ac2ac4 ? "ac1ac2ac4=" + TRUE : "ac1ac2ac4=" + FALSE) + ", " +
                     (ac6ac8 ? "ac6ac8=" + TRUE : "ac6ac8=" + FALSE) + ", " +
                     (ac11dn10dn12 ? "ac11dn10dn12=" + TRUE : "ac11dn10dn12=" + FALSE) + ", " +
                     (ac13dn7dn1 ? "ac13dn7dn1=" + TRUE : "ac13dn7dn1=" + FALSE) + ", " +
@@ -411,7 +415,7 @@ public class Triangles {
             {{7, 7, 9, 5, 8, 1}, {6, 3, 9, 2, 1, 7}, {3, 6, 5, 6, 4, 6}, {3, 5, 7, 1, 4, 5}}
     };
 
-    public static void findSolution() {
+    public void findSolution() {
         for (Integer[][] grid : solutions) {
             int oneAcross = extractVector(GridPoint.of(0, 0), GridPoint.of(0, 1), grid);
             int twoAcross = extractVector(GridPoint.of(0, 2), GridPoint.of(0, 3), grid);
@@ -434,7 +438,7 @@ public class Triangles {
 
             int[] answers = {oneAcross, twoAcross, fourAcross, sixAcross, eightAcross, elevenAcross, tenDown, twelveDown, thirteenAcross, sevenDown, oneDown, fourteenAcross, nineDown, fiveDown};
             if (differs(answers, oneAcross + twoAcross + fourAcross)) {
-                System.out.println(Arrays.deepToString(grid));
+                printTriangleConsole(grid);
             }
         }
     }
@@ -472,14 +476,20 @@ public class Triangles {
         int nineDown = extractVector(GridPoint.of(1, 4), GridPoint.of(3, 4), grid);
         int fiveDown = extractVector(GridPoint.of(0, 5), GridPoint.of(1, 5), grid);
 
+        int twoDown = extractVector(GridPoint.of(0, 2), GridPoint.of(2, 2), grid);
+        int threeDown = extractVector(GridPoint.of(0, 3), GridPoint.of(2, 3), grid);
+
+        int sumAcross = oneAcross + twoAcross + fourAcross + sixAcross + eightAcross + elevenAcross + thirteenAcross + fourteenAcross;
+        int sumDown = tenDown + twelveDown + twoDown + threeDown + sevenDown + oneDown + nineDown + fiveDown;
+
+        result.setSumAcross(sumAcross);
+        result.setSumDown(sumDown);
+
         int perimeter1ac2ac4ac = oneAcross + twoAcross + fourAcross;
         boolean triangularPerimeter = isTriangularNumber(perimeter1ac2ac4ac);
         boolean allSidesOdd = isOddComposite(oneAcross) && isOddComposite(twoAcross) && isOddComposite(fourAcross);
         boolean coPrime = gcd(oneAcross, twoAcross) == 1 && gcd(twoAcross, fourAcross) == 1 && gcd(fourAcross, oneAcross) == 1;
         result.setAc1ac2ac4(triangularPerimeter && allSidesOdd && coPrime);
-
-        int twoDown = extractVector(GridPoint.of(0, 2), GridPoint.of(2, 2), grid);
-        int threeDown = extractVector(GridPoint.of(0, 3), GridPoint.of(2, 3), grid);
 
         result.setAc6ac8(isPerfectSquare(twoDown + threeDown));
         result.setAc11dn10dn12(isPrimitivePythagoreanTriangle(elevenAcross, tenDown, twelveDown));

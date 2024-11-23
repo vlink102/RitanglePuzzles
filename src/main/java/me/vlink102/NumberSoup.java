@@ -1018,6 +1018,8 @@ public class NumberSoup {
         private boolean dn6;
         private boolean dn7;
         private boolean dn14;
+        private int sumAcross;
+        private int sumDown;
 
         public ValidationResult() {}
         public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
@@ -1025,7 +1027,9 @@ public class NumberSoup {
 
         @Override
         public String toString() {
-            return (ac136 ? "ac136=" + TRUE : "ac136=" + FALSE) + ", " +
+            return  "Sum Across: " + sumAcross + ", " +
+                    "Sum Down: " + sumDown + ", " +
+                    (ac136 ? "ac136=" + TRUE : "ac136=" + FALSE) + ", " +
                     (ac8 ? "ac8=" + TRUE : "ac8=" + FALSE) + ", " +
                     (ac10 ? "ac10=" + TRUE : "ac10=" + FALSE) + ", " +
                     (ac12 ? "ac12=" + TRUE : "ac12=" + FALSE) + ", " +
@@ -1095,7 +1099,11 @@ public class NumberSoup {
         int elevenDown = extractVector(GridPoint.of(1, 3), GridPoint.of(3, 3), grid);
         System.out.print("11dn: " + elevenDown + "] ");
 
+        int sumAcross = oneAcross + threeAcross + sixAcross + eightAcross + tenAcross + twelveAcross + fifteenAcross + sixteenAcross + seventeenAcross + nineteenAcross + twentyAcross + twentyOneAcross;
+        int sumDown = oneDown + twoDown + fourDown + fiveDown + elevenDown + nineDown + sixDown + sevenDown + fourteenDown;
 
+        result.setSumAcross(sumAcross);
+        result.setSumDown(sumDown);
 
         result.setAc8(eightAcross == oneDown - nineDown);
         result.setAc10(isPresent(tenAcross, DIVISIBLE_BY_DIVISORS));
