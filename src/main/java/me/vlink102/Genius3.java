@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class Genius3 {
@@ -30,8 +31,15 @@ public class Genius3 {
                 new int[][]{{0, 9, 0}, {9, 9, 9}}      // Irregular 4
         );
 
+        List<int[][]> testSeeIfMyCodeActuallyWorks = new ArrayList<>() {{
+            this.add(new int[][] {{1,1}, {1, 1}}); // 2x2
+            this.add(new int[][] {{2,2,2}, {0,0,2}}); // L shape
+            this.add(new int[][] {{0,3,0},{3,3,3}}); // t shape
+            this.add(new int[][] {{4}}); // 1x1
+        }};
+
         Shape.total = 0;
-        Shape.solveAll(new int[6][6], pieces, 0);
+        Shape.solveAll(new int[4][4], testSeeIfMyCodeActuallyWorks, 0);
         System.out.println(Shape.total);
         System.out.println("Complete");
     }
@@ -249,7 +257,7 @@ public class Genius3 {
 
         public static void solveAll(int[][] grid, List<int[][]> pieces, int pieceIndex) {
             if (pieceIndex == pieces.size()) {
-                //printGrid(grid);
+                printGrid(grid);
                 total++;
                 return;
             }
@@ -364,7 +372,7 @@ public class Genius3 {
         }
 
         public static int[][] applyPlacement(int[][] grid, int[][] piece, int startRow, int startCol) {
-            int[][] newGrid = deepCopy(grid); // Create a copy of the grid
+            int[][] newGrid = deepCopy(grid);
             int pieceRows = piece.length;
             int pieceCols = piece[0].length;
 
@@ -389,7 +397,6 @@ public class Genius3 {
 
         public static boolean solve(int[][] grid, List<int[][]> pieces, int pieceIndex) {
             if (pieceIndex == pieces.size()) {
-                // All pieces placed
                 printGrid(grid);
                 return true;
             }
@@ -403,7 +410,7 @@ public class Genius3 {
                 }
             }
 
-            return false; // Backtrack if no valid placement
+            return false;
         }
         public static void printGrid(int[][] grid) {
             for (int[] row : grid) {
@@ -412,7 +419,20 @@ public class Genius3 {
                 }
                 System.out.println();
             }
-            System.out.println(); // Add a blank line for better readability
+            /*System.out.print("Totals for each number: ");
+            HashMap<Integer, Integer> counts = new HashMap<>();
+            for (int[] ints : grid) {
+                for (int anInt : ints) {
+                    counts.put(anInt, counts.getOrDefault(anInt, 0) + 1);
+                }
+            }
+            counts.forEach((integer, integer2) -> {
+                if (integer2 > 4) {
+                    throw new RuntimeException();
+                }
+                System.out.print(integer2);
+            });*/
+            System.out.println();
         }
 
     }
