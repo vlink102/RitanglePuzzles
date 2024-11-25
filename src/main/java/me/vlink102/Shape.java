@@ -1,8 +1,14 @@
 package me.vlink102;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static me.vlink102.NumberSoup.ValidationResult.FALSE;
+import static me.vlink102.NumberSoup.ValidationResult.TRUE;
 
 public class Shape {
     public static List<int[][]> findAllPlacements(int[][] grid, int[][] piece, int[][] constraintGrid) {
@@ -40,6 +46,8 @@ public class Shape {
 
     static int total = 0;
 
+
+
     public static void solveAll(int[][] grid, List<int[][]> pieces, int pieceIndex, int[][] constraintGrid) {
         if (pieceIndex == pieces.size()) {
             // Final check: ensure all 1's in the constraint grid are covered
@@ -52,7 +60,20 @@ public class Shape {
             }
 
             // Print the valid solution
-            printGrid(grid);
+            //printGrid(grid);
+            //System.out.println("Validation in progress...");
+            //System.out.println("Valid: " + Genius3.validateGenius3(grid));
+            Genius3.Genius3Validator validator = Genius3.validateGenius3(grid);
+            if (validator.gridIsClueValid != Genius3.ValidationState.UNKNOWN) {
+                System.out.println("---------------");
+                System.out.println("Valid: " + (validator.gridIsClueValid == Genius3.ValidationState.PASSED ? TRUE : FALSE));
+                printGrid(grid);
+                System.out.println("---------------");
+                if (validator.gridIsClueValid == Genius3.ValidationState.PASSED) {
+                    System.out.println("omg");
+                    System.exit(0);
+                }
+            }
             total++; // Count the total solutions
             return;
         }

@@ -2,6 +2,7 @@ package me.vlink102;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.junit.Assert;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -39,15 +40,20 @@ public class Genius3 {
         }};
 
         Shape.total = 0;
-        /*Shape.solveAll(new int[6][6], pieces, 0, new int[][] {
+        Shape.solveAll(new int[6][6], pieces, 0, new int[][] {
                 {1, 0, 1, 1, 1, 1},
                 {1, 0, 0, 1, 0, 0},
                 {0, 1, 1, 1, 1, 0},
                 {1, 0, 1, 0, 0, 1},
                 {0, 1, 1, 1, 0, 0},
                 {1, 0, 1, 0, 0, 0}
-        });*/
-        validateGenius3(new int[6][6]);
+        });
+
+        HashMap<Integer, Integer> test = new HashMap<>() {{
+            this.put(1,4);
+            this.put(2,6);
+            this.put(0,7);
+        }};
         //Shape.solveAll(new int[2][2], testSeeIfMyCodeActuallyWorks, 0, new int[][] {{0,0},{1,0}});
         System.out.println(Shape.total);
         System.out.println("Complete");
@@ -142,9 +148,41 @@ public class Genius3 {
         dfs(grid, visited, row, col + 1, target);
     }
 
-    public static boolean validateGenius3(int[][] grid) {
-        if (grid.length != 6 || grid[0].length != 6) return false;
-        if (!validateDigitSeparation(grid)) return false;
+    public enum ValidationState {
+        PASSED,
+        FAILED,
+        UNKNOWN
+    }
+
+    @Getter
+    @Setter
+    public static class Genius3Validator {
+        ValidationState validDigitSeparation = null;
+        ValidationState countsValid = null;
+        ValidationState containsCorrectShapeSizes = null;
+        ValidationState gridIsClueValid = null;
+        ValidationState gridSize = null;
+        public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
+        public static final String TRUE = "\u001B[32mTRUE\u001B[0m";
+
+        public Genius3Validator() {
+        }
+
+        @Override
+        public String toString() {
+            return (validDigitSeparation == null ? "validDigitSeparation=UNKNOWN" : (validDigitSeparation == ValidationState.PASSED ? "validDigitSeparation=" + TRUE : "validDigitSeparation=" + FALSE)) + ", " +
+                    (countsValid == null ? "countsValid=UNKNOWN" : (countsValid == ValidationState.PASSED ? "countsValid=" + TRUE : "countsValid=" + FALSE)) + ", " +
+                    (containsCorrectShapeSizes == null ? "containsCorrectShapeSizes=UNKNOWN" : (containsCorrectShapeSizes == ValidationState.PASSED ? "containsCorrectShapeSizes=" + TRUE : "containsCorrectShapeSizes=" + FALSE)) + ", " +
+                    (gridIsClueValid == null ? "gridIsClueValid=UNKNOWN" : (gridIsClueValid == ValidationState.PASSED ? "gridIsClueValid=" + TRUE : "gridIsClueValid=" + FALSE)) + ", " +
+                    (gridSize == null ? "gridSize=UNKNOWN" : (gridSize == ValidationState.PASSED ? "gridSize=" + TRUE : "gridSize=" + FALSE))
+                    ;
+        }
+    }
+
+    public static Genius3Validator validateGenius3(int[][] grid) {
+        Genius3Validator validator = new Genius3Validator();
+        validator.gridSize = grid.length == 6 && grid[0].length == 6 ? ValidationState.PASSED : ValidationState.FAILED;
+        validator.validDigitSeparation = validateDigitSeparation(grid) ? ValidationState.PASSED : ValidationState.FAILED;
 
         HashMap<Integer, Integer> counts = new HashMap<>();
         for (int[] ints : grid) {
@@ -152,8 +190,8 @@ public class Genius3 {
                 counts.put(anInt, counts.getOrDefault(anInt, 0) + 1);
             }
         }
-        if (counts.get(0) != 7) return false;
-        if (!areContentsEqual(List.of(1, 2, 3, 3, 4, 4, 4, 4, 4), counts.values())) return false;
+        validator.countsValid = counts.get(0) == 7  ? ValidationState.PASSED : ValidationState.FAILED;;
+        validator.containsCorrectShapeSizes = (areContentsEqual(List.of(1, 2, 3, 3, 4, 4, 4, 4, 4, 7), counts.values())) ? ValidationState.PASSED : ValidationState.FAILED;
 
         List<List<Integer>> ac2 = generatePermutations(List.of(0,1,2,3,4,5,6,7));
         List<List<Integer>> ac3 = generatePermutations(List.of(0,1));
@@ -165,7 +203,7 @@ public class Genius3 {
         System.out.println(ac2.size() + "*" + ac3.size() + "*" + ac4.size() + "*" + dn2.size() + "*" + dn3.size() + "*" + dn4.size());
         int permutations = 0;
 
-        int[] counter = new int[9];
+        int[] counter = new int[10];
 
         for (List<Integer> across2Permutations : ac2) {
             List<GridVector> ac2Vectors = fromPermutation(across2Permutations, ACROSS_2_VECTORS);
@@ -220,9 +258,7 @@ public class Genius3 {
                                 if (!updateCounts(counter, twentyThreeDown, twentyFourDown)) continue;
 
                                 permutations ++;
-                                if (validateGrid(oneAcross, twoAcross, threeAcross, fourAcross, fiveAcross, sixAcross, sevenAcross, eightAcross, nineAcross, tenAcross, elevenAcross, twelveAcross, thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown, nineteenDown, twentyDown, twentyOneDown, twentyTwoDown, twentyThreeDown, twentyFourDown)) {
-                                    return true;
-                                }
+                                validator.gridIsClueValid = validateGrid(oneAcross, twoAcross, threeAcross, fourAcross, fiveAcross, sixAcross, sevenAcross, eightAcross, nineAcross, tenAcross, elevenAcross, twelveAcross, thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown, nineteenDown, twentyDown, twentyOneDown, twentyTwoDown, twentyThreeDown, twentyFourDown) ? ValidationState.PASSED : ValidationState.FAILED;
                             }
                         }
                     }
@@ -230,7 +266,7 @@ public class Genius3 {
             }
         }
         System.out.println(permutations);
-        return false;
+        return validator;
     }
 
     public static int fromValues(int clueIndex, int[] values) {
@@ -535,7 +571,7 @@ public class Genius3 {
             this.to = new GridPoint(toRow - 1, toCol - 1);
         }
 
-        public int apply(Integer[][] grid) {
+        public int apply(int[][] grid) {
             return extractVector(from, to, grid);
         }
 
