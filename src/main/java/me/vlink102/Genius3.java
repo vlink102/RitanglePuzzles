@@ -2,7 +2,6 @@ package me.vlink102;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.junit.Assert;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,15 +11,59 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Genius3 {
+
+    public static final int[] fibonacci2Digit = {13, 21, 34, 55, 89};
+    public static final int[] triangularMultipleOf7 = {105, 210, 231, 378, 406, 595, 630};
+    public static final Integer[][] modifiableGrid = new Integer[6][6];
+    private static final List<GridVector> DOWN_2_VECTORS = new ArrayList<>(6) {{
+        this.add(new GridVector(3, 2, 4, 2)); // 2
+        this.add(new GridVector(5, 2, 6, 2)); // 2
+        this.add(new GridVector(5, 3, 6, 3)); // 2
+        this.add(new GridVector(1, 4, 2, 4)); // 2
+        this.add(new GridVector(1, 5, 2, 5)); // 2
+        this.add(new GridVector(3, 5, 4, 5)); // 2
+    }};
+    private static final List<GridVector> DOWN_3_VECTORS = new ArrayList<>(4) {{
+        this.add(new GridVector(1, 6, 3, 6)); // 3
+        this.add(new GridVector(4, 6, 6, 6)); // 3
+        this.add(new GridVector(1, 1, 3, 1)); // 3
+        this.add(new GridVector(4, 1, 6, 1)); // 3
+    }};
+    private static final List<GridVector> DOWN_4_VECTORS = new ArrayList<>(2) {{
+        this.add(new GridVector(1, 3, 4, 3)); // 4
+        this.add(new GridVector(3, 4, 6, 4)); // 4
+    }};
+    private static final List<GridVector> ACROSS_2_VECTORS = new ArrayList<>(8) {{
+        this.add(new GridVector(1, 5, 1, 6)); // 2
+        this.add(new GridVector(2, 4, 2, 5)); // 2
+        this.add(new GridVector(3, 3, 3, 4)); // 2
+        this.add(new GridVector(3, 5, 3, 6)); // 2
+        this.add(new GridVector(4, 1, 4, 2)); // 2
+        this.add(new GridVector(4, 3, 4, 4)); // 2
+        this.add(new GridVector(5, 2, 5, 3)); // 2
+        this.add(new GridVector(6, 1, 6, 2)); // 2
+    }};
+    private static final List<GridVector> ACROSS_3_VECTORS = new ArrayList<>(2) {{
+        this.add(new GridVector(5, 4, 5, 6)); // 3
+        this.add(new GridVector(2, 1, 2, 3)); // 3
+    }};
+    private static final List<GridVector> ACROSS_4_VECTORS = new ArrayList<>(2) {{
+        this.add(new GridVector(1, 1, 1, 4)); // 4
+        this.add(new GridVector(6, 3, 6, 6)); // 4
+    }};
+
+    static {
+        for (Integer[] integers : modifiableGrid) {
+            Arrays.fill(integers, 1);
+        }
+    }
 
     public Genius3() throws IOException {
         List<int[][]> pieces = List.of(
@@ -36,11 +79,11 @@ public class Genius3 {
         );
 
         List<int[][]> testSeeIfMyCodeActuallyWorks = new ArrayList<>() {{
-            this.add(new int[][] {{1,1}, {1, 0}}); //
+            this.add(new int[][]{{1, 1}, {1, 0}}); //
         }};
 
         Shape.total = 0;
-        Shape.solveAll(new int[6][6], pieces, 0, new int[][] {
+        Shape.solveAll(new int[6][6], pieces, 0, new int[][]{
                 {1, 0, 1, 1, 1, 1},
                 {1, 0, 0, 1, 0, 0},
                 {0, 1, 1, 1, 1, 0},
@@ -50,9 +93,9 @@ public class Genius3 {
         });
 
         HashMap<Integer, Integer> test = new HashMap<>() {{
-            this.put(1,4);
-            this.put(2,6);
-            this.put(0,7);
+            this.put(1, 4);
+            this.put(2, 6);
+            this.put(0, 7);
         }};
         //Shape.solveAll(new int[2][2], testSeeIfMyCodeActuallyWorks, 0, new int[][] {{0,0},{1,0}});
         System.out.println(Shape.total);
@@ -69,6 +112,7 @@ public class Genius3 {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         return listFrequencyMap.equals(collectionFrequencyMap);
     }
+
     public static int[] getDigits(int number) {
         String numberString = String.valueOf(number);
         int[] digits = new int[numberString.length()];
@@ -78,11 +122,12 @@ public class Genius3 {
         }
         return digits;
     }
+
     public static boolean updateCounts(int[] counts, int... values) {
         for (int value : values) {
             int[] digits = getDigits(value);
             for (int digit : digits) {
-                counts[digit] ++;
+                counts[digit]++;
                 if (counts[digit] > 4) {
                     return false;
                 }
@@ -148,37 +193,6 @@ public class Genius3 {
         dfs(grid, visited, row, col + 1, target);
     }
 
-    public enum ValidationState {
-        PASSED,
-        FAILED,
-        UNKNOWN
-    }
-
-    @Getter
-    @Setter
-    public static class Genius3Validator {
-        ValidationState validDigitSeparation = null;
-        ValidationState countsValid = null;
-        ValidationState containsCorrectShapeSizes = null;
-        ValidationState gridIsClueValid = null;
-        ValidationState gridSize = null;
-        public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
-        public static final String TRUE = "\u001B[32mTRUE\u001B[0m";
-
-        public Genius3Validator() {
-        }
-
-        @Override
-        public String toString() {
-            return (validDigitSeparation == null ? "validDigitSeparation=UNKNOWN" : (validDigitSeparation == ValidationState.PASSED ? "validDigitSeparation=" + TRUE : "validDigitSeparation=" + FALSE)) + ", " +
-                    (countsValid == null ? "countsValid=UNKNOWN" : (countsValid == ValidationState.PASSED ? "countsValid=" + TRUE : "countsValid=" + FALSE)) + ", " +
-                    (containsCorrectShapeSizes == null ? "containsCorrectShapeSizes=UNKNOWN" : (containsCorrectShapeSizes == ValidationState.PASSED ? "containsCorrectShapeSizes=" + TRUE : "containsCorrectShapeSizes=" + FALSE)) + ", " +
-                    (gridIsClueValid == null ? "gridIsClueValid=UNKNOWN" : (gridIsClueValid == ValidationState.PASSED ? "gridIsClueValid=" + TRUE : "gridIsClueValid=" + FALSE)) + ", " +
-                    (gridSize == null ? "gridSize=UNKNOWN" : (gridSize == ValidationState.PASSED ? "gridSize=" + TRUE : "gridSize=" + FALSE))
-                    ;
-        }
-    }
-
     public static Genius3Validator validateGenius3(int[][] grid) {
         Genius3Validator validator = new Genius3Validator();
         validator.gridSize = grid.length == 6 && grid[0].length == 6 ? ValidationState.PASSED : ValidationState.FAILED;
@@ -190,15 +204,15 @@ public class Genius3 {
                 counts.put(anInt, counts.getOrDefault(anInt, 0) + 1);
             }
         }
-        validator.countsValid = counts.get(0) == 7  ? ValidationState.PASSED : ValidationState.FAILED;;
+        validator.countsValid = counts.get(0) == 7 ? ValidationState.PASSED : ValidationState.FAILED;
         validator.containsCorrectShapeSizes = (areContentsEqual(List.of(1, 2, 3, 3, 4, 4, 4, 4, 4, 7), counts.values())) ? ValidationState.PASSED : ValidationState.FAILED;
 
-        List<List<Integer>> ac2 = generatePermutations(List.of(0,1,2,3,4,5,6,7));
-        List<List<Integer>> ac3 = generatePermutations(List.of(0,1));
-        List<List<Integer>> ac4 = generatePermutations(List.of(0,1));
-        List<List<Integer>> dn2 = generatePermutations(List.of(0,1,2,3,4,5));
-        List<List<Integer>> dn3 = generatePermutations(List.of(0,1,2,3));
-        List<List<Integer>> dn4 = generatePermutations(List.of(0,1));
+        List<List<Integer>> ac2 = generatePermutations(List.of(0, 1, 2, 3, 4, 5, 6, 7));
+        List<List<Integer>> ac3 = generatePermutations(List.of(0, 1));
+        List<List<Integer>> ac4 = generatePermutations(List.of(0, 1));
+        List<List<Integer>> dn2 = generatePermutations(List.of(0, 1, 2, 3, 4, 5));
+        List<List<Integer>> dn3 = generatePermutations(List.of(0, 1, 2, 3));
+        List<List<Integer>> dn4 = generatePermutations(List.of(0, 1));
 
         System.out.println(ac2.size() + "*" + ac3.size() + "*" + ac4.size() + "*" + dn2.size() + "*" + dn3.size() + "*" + dn4.size());
         int permutations = 0;
@@ -208,12 +222,19 @@ public class Genius3 {
         for (List<Integer> across2Permutations : ac2) {
             List<GridVector> ac2Vectors = fromPermutation(across2Permutations, ACROSS_2_VECTORS);
             int oneAcross = extractVector(ac2Vectors.get(0).from, ac2Vectors.get(0).to, grid);
+            if (!(10 <= oneAcross && oneAcross < 20)) continue;
+            if (!(oneAcross == 10 || oneAcross == 15)) continue;
             int twoAcross = extractVector(ac2Vectors.get(1).from, ac2Vectors.get(1).to, grid);
+            if (!(twoAcross == 11 || twoAcross == 22 || twoAcross == 33 || twoAcross == 44)) continue;
             int threeAcross = extractVector(ac2Vectors.get(2).from, ac2Vectors.get(2).to, grid);
+            if (threeAcross != 37) continue;
             int fourAcross = extractVector(ac2Vectors.get(3).from, ac2Vectors.get(3).to, grid);
+            if (fourAcross != 54) continue;
             int fiveAcross = extractVector(ac2Vectors.get(4).from, ac2Vectors.get(4).to, grid);
             int sixAcross = extractVector(ac2Vectors.get(5).from, ac2Vectors.get(5).to, grid);
+            if (!(sixAcross >= 60)) continue;
             int sevenAcross = extractVector(ac2Vectors.get(6).from, ac2Vectors.get(6).to, grid);
+            if (!(sevenAcross == 85 || sevenAcross == 90)) continue;
             int eightAcross = extractVector(ac2Vectors.get(7).from, ac2Vectors.get(7).to, grid);
             if (!updateCounts(counter, oneAcross, twoAcross, threeAcross, fourAcross, fiveAcross, sixAcross, sevenAcross, eightAcross)) {
                 continue;
@@ -222,12 +243,16 @@ public class Genius3 {
             for (List<Integer> across3Permutations : ac3) {
                 List<GridVector> ac3Vectors = fromPermutation(across3Permutations, ACROSS_3_VECTORS);
                 int nineAcross = extractVector(ac3Vectors.get(0).from, ac3Vectors.get(0).to, grid);
+                if (!(nineAcross == 111 || nineAcross == 222 || nineAcross == 333 || nineAcross == 444)) continue;
                 int tenAcross = extractVector(ac3Vectors.get(1).from, ac3Vectors.get(1).to, grid);
+                if (!(tenAcross >= 570 && tenAcross < 800)) continue;
                 if (!updateCounts(counter, nineAcross, tenAcross)) continue;
+
 
                 for (List<Integer> across4Permutations : ac4) {
                     List<GridVector> ac4Vectors = fromPermutation(across4Permutations, ACROSS_4_VECTORS);
                     int elevenAcross = extractVector(ac4Vectors.get(0).from, ac4Vectors.get(0).to, grid);
+                    if (!(elevenAcross >= 2090)) continue;
                     int twelveAcross = extractVector(ac4Vectors.get(1).from, ac4Vectors.get(1).to, grid);
                     if (!updateCounts(counter, elevenAcross, twelveAcross)) continue;
 
@@ -235,29 +260,56 @@ public class Genius3 {
                         List<GridVector> dn2Vectors = fromPermutation(down2Permutations, DOWN_2_VECTORS);
 
                         int thirteenDown = extractVector(dn2Vectors.get(0).from, dn2Vectors.get(0).to, grid);
+                        if (thirteenDown != 27) continue;
+                        if (thirteenDown != 27 && thirteenDown != 64) continue;
                         int fourteenDown = extractVector(dn2Vectors.get(1).from, dn2Vectors.get(1).to, grid);
+                        if (!(fourteenDown >= 33)) continue;
+                        if (fourteenDown % 2 != 0) continue;
+                        if (fourteenDown % 11 != 0) continue;
                         int fifteenDown = extractVector(dn2Vectors.get(2).from, dn2Vectors.get(2).to, grid);
+                        if (fifteenDown != 50) continue;
+                        if (fifteenDown % 5 != 0) continue;
                         int sixteenDown = extractVector(dn2Vectors.get(3).from, dn2Vectors.get(3).to, grid);
+                        if (sixteenDown != 55) continue;
+                        if (Arrays.stream(fibonacci2Digit).noneMatch(i -> i == sixteenDown)) continue;
                         int seventeenDown = extractVector(dn2Vectors.get(4).from, dn2Vectors.get(4).to, grid);
+                        if (!(seventeenDown == 61 || seventeenDown == 67 || seventeenDown == 71 || seventeenDown == 73)) continue;
                         int eighteenDown = extractVector(dn2Vectors.get(5).from, dn2Vectors.get(5).to, grid);
-                        if (!updateCounts(counter, thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown)) continue;
+                        if (!(sevenAcross >= eighteenDown + 10)) continue;
+                        if (!(eighteenDown < 80)) continue;
+
+                        if (List.of(thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown).stream().anyMatch(integer -> {
+                            String s = String.valueOf(integer);
+                            return s.startsWith("9") || s.startsWith("1");
+                        })) {
+                            continue;
+                        }
+
+                        if (!updateCounts(counter, thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown))
+                            continue;
 
                         for (List<Integer> down3Permutations : dn3) {
                             List<GridVector> dn3Vectors = fromPermutation(down3Permutations, DOWN_3_VECTORS);
                             int nineteenDown = extractVector(dn3Vectors.get(0).from, dn3Vectors.get(0).to, grid);
+                            if (!(nineteenDown > 190 && nineteenDown < 230)) continue;
                             int twentyDown = extractVector(dn3Vectors.get(1).from, dn3Vectors.get(1).to, grid);
+                            if (twentyDown != 630) continue;
+                            if (Arrays.stream(triangularMultipleOf7).noneMatch(i -> i == twentyDown)) continue;
                             int twentyOneDown = extractVector(dn3Vectors.get(2).from, dn3Vectors.get(2).to, grid);
                             int twentyTwoDown = extractVector(dn3Vectors.get(3).from, dn3Vectors.get(3).to, grid);
+                            if (twentyTwoDown != 999) continue;
 
-                            if (!updateCounts(counter, nineteenDown, twentyDown, twentyOneDown, twentyTwoDown)) continue;
+                            if (!updateCounts(counter, nineteenDown, twentyDown, twentyOneDown, twentyTwoDown))
+                                continue;
 
                             for (List<Integer> down4Permutations : dn4) {
                                 List<GridVector> dn4Vectors = fromPermutation(down4Permutations, DOWN_4_VECTORS);
                                 int twentyThreeDown = extractVector(dn4Vectors.get(0).from, dn4Vectors.get(0).to, grid);
                                 int twentyFourDown = extractVector(dn4Vectors.get(1).from, dn4Vectors.get(1).to, grid);
+                                if (!(twentyFourDown > 3535 && twentyFourDown < 8100)) continue;
                                 if (!updateCounts(counter, twentyThreeDown, twentyFourDown)) continue;
 
-                                permutations ++;
+                                permutations++;
                                 validator.gridIsClueValid = validateGrid(oneAcross, twoAcross, threeAcross, fourAcross, fiveAcross, sixAcross, sevenAcross, eightAcross, nineAcross, tenAcross, elevenAcross, twelveAcross, thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown, nineteenDown, twentyDown, twentyOneDown, twentyTwoDown, twentyThreeDown, twentyFourDown) ? ValidationState.PASSED : ValidationState.FAILED;
                             }
                         }
@@ -283,6 +335,34 @@ public class Genius3 {
     }
 
     public static boolean validateGrid(int... values) {
+        //if (values[12] != 27 && values[12] != 64) return false;
+        //if (values[13] % 2 != 0) return false;
+        //if (values[13] % 11 != 0) return false;
+        //if (values[14] % 5 != 0) return false;
+        //if (Arrays.stream(fibonacci2Digit).noneMatch(i -> i == values[15])) return false;
+        //if (!(10 <= values[0] && values[0] < 20)) return false;
+        //if (Arrays.stream(triangularMultipleOf7).noneMatch(i -> i == values[19])) return false;
+        //if () return false;
+        //if (!(values[0] == 10 || values[0] == 15)) return false;
+        //if (!(values[1] == 11 || values[1] == 22 || values[1] == 33 || values[1] == 44)) return false;
+        if (values[3] != 54) return false;
+        if (!(values[5] >= 60)) return false;
+        if (!(values[6] == 85 || values[6] == 90)) return false;
+        if (!(values[8] == 111 || values[8] == 222 || values[8] == 333 || values[8] == 444)) return false;
+        if (!(values[9] >= 570 && values[9] < 800)) return false;
+        if (!(values[10] >= 2090)) return false;
+        if (values[12] != 27) return false;
+        if (!(values[13] >= 33)) return false;
+        if (values[14] != 50) return false;
+        if (values[15] != 55) return false;
+        if (!(values[16] == 61 || values[16] == 67 || values[16] == 71 || values[16] == 73)) return false;
+        if (!(values[17] < 80)) return false;
+        if (!(values[18] > 190 && values[18] < 230)) return false;
+        if (values[19] != 630) return false;
+        if (values[21] != 999) return false;
+        // 23dn >= 101 - 222  ?????
+        if (!(values[23] > 3535 && values[23] < 8100)) return false;
+
         if (values[8] + values[9] >= values[20]) return false;
         if (values[6] - values[0] != values[17]) return false;
         if (values[7] + values[14] + values[15] != values[18]) return false;
@@ -314,8 +394,7 @@ public class Genius3 {
         if (!isPalindromic(values[8])) return false;
         if (!isPalindromic(values[11])) return false;
         if (!isPalindromic(values[13])) return false;
-        if (!isPalindromic(values[22] / 35)) return false;
-        return true;
+        return isPalindromic(values[22] / 35);
 
     }
 
@@ -343,7 +422,6 @@ public class Genius3 {
         String reversedStr = new StringBuilder(numStr).reverse().toString();
         return numStr.equals(reversedStr);
     }
-
 
     public static boolean hasCommonElement(int[] array1, int[] array2) {
         return Arrays.stream(array1)
@@ -392,38 +470,10 @@ public class Genius3 {
         System.out.println("All tests passed");
     }
 
-    public static final Integer[][] modifiableGrid = new Integer[6][6];
-
-    static {
-        for (Integer[] integers : modifiableGrid) {
-            Arrays.fill(integers, 1);
-        }
-    }
-    public class TextFieldUnique extends JTextField {
-        @Getter
-        private final GridPoint gridPoint;
-
-        public TextFieldUnique(GridPoint gridPoint) {
-            super();
-            this.gridPoint = gridPoint;
-        }
-    }
-    public record GridPoint(int row, int col) {
-        public static GridPoint of(int row, int col) {
-            return new GridPoint(row, col);
-        }
-    }
-
-    private void printGenius3Console(Integer[][] grid) {
-        System.out.print(getResult(grid));
-        System.out.println(Arrays.deepToString(grid) + "\n");
-    }
-
     private static boolean isTriangularNumber(int n) {
         int x = (int) (Math.sqrt(2 * n));
         return x * (x + 1) / 2 == n;
     }
-
 
     public static void generatePermutations(List<Integer> nums, List<Integer> current, boolean[] used, Runnable whenDone) {
         // Base case: if the current permutation has the same size as the input list
@@ -496,93 +546,6 @@ public class Genius3 {
             }
         }
     }
-    @Getter
-    @Setter
-    public class ValidationResult {
-        boolean ac1;
-        boolean ac2;
-        boolean ac3;
-        boolean ac4;
-        boolean ac5;
-        boolean ac6;
-        boolean ac7;
-        boolean ac8;
-        boolean ac9;
-        boolean ac10;
-        boolean ac11;
-        boolean ac12;
-        boolean dn13;
-        boolean dn14;
-        boolean dn15;
-        boolean dn16;
-        boolean dn17;
-        boolean dn18;
-        boolean dn19;
-        boolean dn20;
-        boolean dn21;
-        boolean dn22;
-        boolean dn23;
-        boolean dn24;
-        private int sumAcross;
-        private int sumDown;
-
-        public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
-        public static final String TRUE = "\u001B[32mTRUE\u001B[0m";
-
-
-        @Override
-        public String toString() {
-            return  "Sum Across: " + sumAcross + ", " +
-                    "Sum Down: " + sumDown + ", " +
-                    (ac1 ? "ac1=" + TRUE : "ac1=" + FALSE) + ", " +
-                    (ac2 ? "ac2=" + TRUE : "ac2=" + FALSE) + ", " +
-                    (ac3 ? "ac3=" + TRUE : "ac3=" + FALSE) + ", " +
-                    (ac4 ? "ac4=" + TRUE : "ac4=" + FALSE) + ", " +
-                    (ac5 ? "ac5=" + TRUE : "ac5=" + FALSE) + ", " +
-                    (ac6 ? "ac6=" + TRUE : "ac6=" + FALSE) + ", " +
-                    (ac7 ? "ac7=" + TRUE : "ac7=" + FALSE) + ", " +
-                    (ac8 ? "ac8=" + TRUE : "ac8=" + FALSE) + ", " +
-                    (ac9 ? "ac9=" + TRUE : "ac9=" + FALSE) + ", " +
-                    (ac10 ? "ac10=" + TRUE : "ac10=" + FALSE) + ", " +
-                    (ac11 ? "ac11=" + TRUE : "ac11=" + FALSE) + ", " +
-                    (ac12 ? "ac12=" + TRUE : "ac12=" + FALSE) + ", " +
-                    (dn13 ? "dn13=" + TRUE : "dn13=" + FALSE) + ", " +
-                    (dn14 ? "dn14=" + TRUE : "dn14=" + FALSE) + ", " +
-                    (dn15 ? "dn15=" + TRUE : "dn15=" + FALSE) + ", " +
-                    (dn16 ? "dn16=" + TRUE : "dn16=" + FALSE) + ", " +
-                    (dn17 ? "dn17=" + TRUE : "dn17=" + FALSE) + ", " +
-                    (dn18 ? "dn18=" + TRUE : "dn18=" + FALSE) + ", " +
-                    (dn19 ? "dn19=" + TRUE : "dn19=" + FALSE) + ", " +
-                    (dn20 ? "dn20=" + TRUE : "dn20=" + FALSE) + ", " +
-                    (dn21 ? "dn21=" + TRUE : "dn21=" + FALSE) + ", " +
-                    (dn22 ? "dn22=" + TRUE : "dn22=" + FALSE) + ", " +
-                    (dn23 ? "dn23=" + TRUE : "dn23=" + FALSE) + ", " +
-                    (dn24 ? "dn24=" + TRUE : "dn24=" + FALSE);
-        }
-    }
-
-    @Getter
-    private static class GridVector {
-        private final GridPoint from;
-        private final GridPoint to;
-
-        public GridVector(int fromRow, int fromCol, int toRow, int toCol) {
-            this.from = new GridPoint(fromRow - 1, fromCol - 1);
-            this.to = new GridPoint(toRow - 1, toCol - 1);
-        }
-
-        public int apply(int[][] grid) {
-            return extractVector(from, to, grid);
-        }
-
-        @Override
-        public String toString() {
-            return "GridVector{" +
-                    "from=" + from +
-                    ", to=" + to +
-                    '}';
-        }
-    }
 
     public static int extractVector(GridPoint from, GridPoint to, int[][] grid) {
         if (from.row != to.row && from.col != to.col) throw new IllegalArgumentException("Must be a straight vector");
@@ -609,46 +572,10 @@ public class Genius3 {
         return value;
     }
 
-    private static final List<GridVector> DOWN_2_VECTORS = new ArrayList<>(6) {{
-        this.add(new GridVector(3,2,4,2)); // 2
-        this.add(new GridVector(5,2,6,2)); // 2
-        this.add(new GridVector(5,3,6,3)); // 2
-        this.add(new GridVector(1,4,2,4)); // 2
-        this.add(new GridVector(1,5,2,5)); // 2
-        this.add(new GridVector(3,5,4,5)); // 2
-    }};
-
-    private static final List<GridVector> DOWN_3_VECTORS = new ArrayList<>(4) {{
-        this.add(new GridVector(1,6,3,6)); // 3
-        this.add(new GridVector(4,6,6,6)); // 3
-        this.add(new GridVector(1,1,3,1)); // 3
-        this.add(new GridVector(4,1,6,1)); // 3
-    }};
-
-    private static final List<GridVector> DOWN_4_VECTORS = new ArrayList<>(2) {{
-        this.add(new GridVector(1,3,4,3)); // 4
-        this.add(new GridVector(3,4,6,4)); // 4
-    }};
-
-    private static final List<GridVector> ACROSS_2_VECTORS = new ArrayList<>(8) {{
-        this.add(new GridVector(1,5,1,6)); // 2
-        this.add(new GridVector(2,4,2,5)); // 2
-        this.add(new GridVector(3,3,3,4)); // 2
-        this.add(new GridVector(3,5,3,6)); // 2
-        this.add(new GridVector(4,1,4,2)); // 2
-        this.add(new GridVector(4,3,4,4)); // 2
-        this.add(new GridVector(5,2,5,3)); // 2
-        this.add(new GridVector(6,1,6,2)); // 2
-    }};
-
-    private static final List<GridVector> ACROSS_3_VECTORS = new ArrayList<>(2) {{
-        this.add(new GridVector(5,4,5,6)); // 3
-        this.add(new GridVector(2,1,2,3)); // 3
-    }};
-    private static final List<GridVector> ACROSS_4_VECTORS = new ArrayList<>(2) {{
-        this.add(new GridVector(1,1,1,4)); // 4
-        this.add(new GridVector(6,3,6,6)); // 4
-    }};
+    private void printGenius3Console(Integer[][] grid) {
+        System.out.print(getResult(grid));
+        System.out.println(Arrays.deepToString(grid) + "\n");
+    }
 
     private ValidationResult getResult(Integer[][] grid) {
         if (grid.length != 6 || grid[0].length != 6) return null;
@@ -730,6 +657,139 @@ public class Genius3 {
 
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public enum ValidationState {
+        PASSED,
+        FAILED,
+        UNKNOWN
+    }
+
+    @Getter
+    @Setter
+    public static class Genius3Validator {
+        public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
+        public static final String TRUE = "\u001B[32mTRUE\u001B[0m";
+        ValidationState validDigitSeparation = null;
+        ValidationState countsValid = null;
+        ValidationState containsCorrectShapeSizes = null;
+        ValidationState gridIsClueValid = null;
+        ValidationState gridSize = null;
+
+        public Genius3Validator() {
+        }
+
+        @Override
+        public String toString() {
+            return (validDigitSeparation == null ? "validDigitSeparation=UNKNOWN" : (validDigitSeparation == ValidationState.PASSED ? "validDigitSeparation=" + TRUE : "validDigitSeparation=" + FALSE)) + ", " +
+                    (countsValid == null ? "countsValid=UNKNOWN" : (countsValid == ValidationState.PASSED ? "countsValid=" + TRUE : "countsValid=" + FALSE)) + ", " +
+                    (containsCorrectShapeSizes == null ? "containsCorrectShapeSizes=UNKNOWN" : (containsCorrectShapeSizes == ValidationState.PASSED ? "containsCorrectShapeSizes=" + TRUE : "containsCorrectShapeSizes=" + FALSE)) + ", " +
+                    (gridIsClueValid == null ? "gridIsClueValid=UNKNOWN" : (gridIsClueValid == ValidationState.PASSED ? "gridIsClueValid=" + TRUE : "gridIsClueValid=" + FALSE)) + ", " +
+                    (gridSize == null ? "gridSize=UNKNOWN" : (gridSize == ValidationState.PASSED ? "gridSize=" + TRUE : "gridSize=" + FALSE))
+                    ;
+        }
+    }
+
+    public record GridPoint(int row, int col) {
+        public static GridPoint of(int row, int col) {
+            return new GridPoint(row, col);
+        }
+    }
+
+    @Getter
+    private static class GridVector {
+        private final GridPoint from;
+        private final GridPoint to;
+
+        public GridVector(int fromRow, int fromCol, int toRow, int toCol) {
+            this.from = new GridPoint(fromRow - 1, fromCol - 1);
+            this.to = new GridPoint(toRow - 1, toCol - 1);
+        }
+
+        public int apply(int[][] grid) {
+            return extractVector(from, to, grid);
+        }
+
+        @Override
+        public String toString() {
+            return "GridVector{" +
+                    "from=" + from +
+                    ", to=" + to +
+                    '}';
+        }
+    }
+
+    public class TextFieldUnique extends JTextField {
+        @Getter
+        private final GridPoint gridPoint;
+
+        public TextFieldUnique(GridPoint gridPoint) {
+            super();
+            this.gridPoint = gridPoint;
+        }
+    }
+
+    @Getter
+    @Setter
+    public class ValidationResult {
+        public static final String FALSE = "\u001B[31mFALSE\u001B[0m";
+        public static final String TRUE = "\u001B[32mTRUE\u001B[0m";
+        boolean ac1;
+        boolean ac2;
+        boolean ac3;
+        boolean ac4;
+        boolean ac5;
+        boolean ac6;
+        boolean ac7;
+        boolean ac8;
+        boolean ac9;
+        boolean ac10;
+        boolean ac11;
+        boolean ac12;
+        boolean dn13;
+        boolean dn14;
+        boolean dn15;
+        boolean dn16;
+        boolean dn17;
+        boolean dn18;
+        boolean dn19;
+        boolean dn20;
+        boolean dn21;
+        boolean dn22;
+        boolean dn23;
+        boolean dn24;
+        private int sumAcross;
+        private int sumDown;
+
+        @Override
+        public String toString() {
+            return "Sum Across: " + sumAcross + ", " +
+                    "Sum Down: " + sumDown + ", " +
+                    (ac1 ? "ac1=" + TRUE : "ac1=" + FALSE) + ", " +
+                    (ac2 ? "ac2=" + TRUE : "ac2=" + FALSE) + ", " +
+                    (ac3 ? "ac3=" + TRUE : "ac3=" + FALSE) + ", " +
+                    (ac4 ? "ac4=" + TRUE : "ac4=" + FALSE) + ", " +
+                    (ac5 ? "ac5=" + TRUE : "ac5=" + FALSE) + ", " +
+                    (ac6 ? "ac6=" + TRUE : "ac6=" + FALSE) + ", " +
+                    (ac7 ? "ac7=" + TRUE : "ac7=" + FALSE) + ", " +
+                    (ac8 ? "ac8=" + TRUE : "ac8=" + FALSE) + ", " +
+                    (ac9 ? "ac9=" + TRUE : "ac9=" + FALSE) + ", " +
+                    (ac10 ? "ac10=" + TRUE : "ac10=" + FALSE) + ", " +
+                    (ac11 ? "ac11=" + TRUE : "ac11=" + FALSE) + ", " +
+                    (ac12 ? "ac12=" + TRUE : "ac12=" + FALSE) + ", " +
+                    (dn13 ? "dn13=" + TRUE : "dn13=" + FALSE) + ", " +
+                    (dn14 ? "dn14=" + TRUE : "dn14=" + FALSE) + ", " +
+                    (dn15 ? "dn15=" + TRUE : "dn15=" + FALSE) + ", " +
+                    (dn16 ? "dn16=" + TRUE : "dn16=" + FALSE) + ", " +
+                    (dn17 ? "dn17=" + TRUE : "dn17=" + FALSE) + ", " +
+                    (dn18 ? "dn18=" + TRUE : "dn18=" + FALSE) + ", " +
+                    (dn19 ? "dn19=" + TRUE : "dn19=" + FALSE) + ", " +
+                    (dn20 ? "dn20=" + TRUE : "dn20=" + FALSE) + ", " +
+                    (dn21 ? "dn21=" + TRUE : "dn21=" + FALSE) + ", " +
+                    (dn22 ? "dn22=" + TRUE : "dn22=" + FALSE) + ", " +
+                    (dn23 ? "dn23=" + TRUE : "dn23=" + FALSE) + ", " +
+                    (dn24 ? "dn24=" + TRUE : "dn24=" + FALSE);
+        }
     }
 
     public class InvalidGridException extends AssertionError {
