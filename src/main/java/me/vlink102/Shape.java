@@ -1,8 +1,5 @@
 package me.vlink102;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +47,7 @@ public class Shape {
 
     public static void solveAll(int[][] grid, List<int[][]> pieces, int pieceIndex, int[][] constraintGrid) {
         if (pieceIndex == pieces.size()) {
+            if (grid[5][1] != 0) return;
             // Final check: ensure all 1's in the constraint grid are covered
             for (int i = 0; i < constraintGrid.length; i++) {
                 for (int j = 0; j < constraintGrid[0].length; j++) {
@@ -65,12 +63,13 @@ public class Shape {
             //System.out.println("Valid: " + Genius3.validateGenius3(grid));
             Genius3.Genius3Validator validator = Genius3.validateGenius3(grid);
             if (validator.gridIsClueValid != Genius3.ValidationState.UNKNOWN) {
-                System.out.println("---------------");
-                System.out.println("Valid: " + (validator.gridIsClueValid == Genius3.ValidationState.PASSED ? TRUE : FALSE));
-                printGrid(grid);
-                System.out.println("---------------");
+                //System.out.println("---------------");
+                //System.out.println("Valid: " + (validator.gridIsClueValid == Genius3.ValidationState.PASSED ? TRUE : FALSE));
+                //printGrid(grid);
+                //System.out.println("---------------");
                 if (validator.gridIsClueValid == Genius3.ValidationState.PASSED) {
                     System.out.println("omg");
+                    printGrid(grid);
                     System.exit(0);
                 }
             }

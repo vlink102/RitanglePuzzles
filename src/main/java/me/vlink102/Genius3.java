@@ -13,9 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Genius3 {
 
@@ -23,40 +26,40 @@ public class Genius3 {
     public static final int[] triangularMultipleOf7 = {105, 210, 231, 378, 406, 595, 630};
     public static final Integer[][] modifiableGrid = new Integer[6][6];
     private static final List<GridVector> DOWN_2_VECTORS = new ArrayList<>(6) {{
-        this.add(new GridVector(3, 2, 4, 2)); // 2
-        this.add(new GridVector(5, 2, 6, 2)); // 2
-        this.add(new GridVector(5, 3, 6, 3)); // 2
-        this.add(new GridVector(1, 4, 2, 4)); // 2
-        this.add(new GridVector(1, 5, 2, 5)); // 2
-        this.add(new GridVector(3, 5, 4, 5)); // 2
+        this.add(new GridVector(1, 4, 2, 4)); // 13 | 0
+        this.add(new GridVector(1, 5, 2, 5)); // 14 | 1
+        this.add(new GridVector(3, 2, 4, 2)); // 15 | 2
+        this.add(new GridVector(3, 5, 4, 5)); // 16 | 3
+        this.add(new GridVector(5, 2, 6, 2)); // 17 | 4
+        this.add(new GridVector(5, 3, 6, 3)); // 18 | 5
     }};
     private static final List<GridVector> DOWN_3_VECTORS = new ArrayList<>(4) {{
-        this.add(new GridVector(1, 6, 3, 6)); // 3
-        this.add(new GridVector(4, 6, 6, 6)); // 3
-        this.add(new GridVector(1, 1, 3, 1)); // 3
-        this.add(new GridVector(4, 1, 6, 1)); // 3
+        this.add(new GridVector(1, 1, 3, 1)); // 19 | 0
+        this.add(new GridVector(1, 6, 3, 6)); // 20 | 1
+        this.add(new GridVector(4, 1, 6, 1)); // 21 | 2
+        this.add(new GridVector(4, 6, 6, 6)); // 22 | 3
     }};
     private static final List<GridVector> DOWN_4_VECTORS = new ArrayList<>(2) {{
-        this.add(new GridVector(1, 3, 4, 3)); // 4
-        this.add(new GridVector(3, 4, 6, 4)); // 4
+        this.add(new GridVector(1, 3, 4, 3)); // 23 | 0
+        this.add(new GridVector(3, 4, 6, 4)); // 24 | 1
     }};
     private static final List<GridVector> ACROSS_2_VECTORS = new ArrayList<>(8) {{
-        this.add(new GridVector(1, 5, 1, 6)); // 2
-        this.add(new GridVector(2, 4, 2, 5)); // 2
-        this.add(new GridVector(3, 3, 3, 4)); // 2
-        this.add(new GridVector(3, 5, 3, 6)); // 2
-        this.add(new GridVector(4, 1, 4, 2)); // 2
-        this.add(new GridVector(4, 3, 4, 4)); // 2
-        this.add(new GridVector(5, 2, 5, 3)); // 2
-        this.add(new GridVector(6, 1, 6, 2)); // 2
+        this.add(new GridVector(1, 5, 1, 6)); // 1 | 0
+        this.add(new GridVector(2, 4, 2, 5)); // 2 | 1
+        this.add(new GridVector(3, 3, 3, 4)); // 3 | 2
+        this.add(new GridVector(3, 5, 3, 6)); // 4 | 3
+        this.add(new GridVector(4, 1, 4, 2)); // 5 | 4
+        this.add(new GridVector(4, 3, 4, 4)); // 6 | 5
+        this.add(new GridVector(5, 2, 5, 3)); // 7 | 6
+        this.add(new GridVector(6, 1, 6, 2)); // 8 | 7
     }};
     private static final List<GridVector> ACROSS_3_VECTORS = new ArrayList<>(2) {{
-        this.add(new GridVector(5, 4, 5, 6)); // 3
-        this.add(new GridVector(2, 1, 2, 3)); // 3
+        this.add(new GridVector(2, 1, 2, 3)); // 9  | 0
+        this.add(new GridVector(5, 4, 5, 6)); // 10 | 1
     }};
     private static final List<GridVector> ACROSS_4_VECTORS = new ArrayList<>(2) {{
-        this.add(new GridVector(1, 1, 1, 4)); // 4
-        this.add(new GridVector(6, 3, 6, 6)); // 4
+        this.add(new GridVector(1, 1, 1, 4)); // 11 | 0
+        this.add(new GridVector(6, 3, 6, 6)); // 12 | 1
     }};
 
     static {
@@ -65,25 +68,93 @@ public class Genius3 {
         }
     }
 
+    public static void generatePermutationsOfPieces() {
+        List<List<Integer>> permutations = generatePermutations(List.of(0, 1, 2, 3, 4, 5, 6, 7), new Predicate<List<Integer>>() {
+            @Override
+            public boolean test(List<Integer> integers) {
+                return true;
+            }
+        });
+        List<int[][]> pieces = List.of(
+                new int[][]{{1, 1, 1, 1}},             // 1x4
+                new int[][]{{2}},                      // 1x1
+                new int[][]{{3, 3}},                   // 1x2
+                new int[][]{{4, 4, 4}},                // 1x3
+                new int[][]{{6, 6}, {6, 6}},           // 2x2
+                new int[][]{{7, 7}, {7, 0}},           // Irregular 1
+                new int[][]{{8, 8, 0}, {0, 8, 8}},     // Irregular 2
+                new int[][]{{9, 0}, {9, 0}, {9, 9}}   // Irregular 3
+                //new int[][]{{0, 9, 0}, {9, 9, 9}}      // Irregular 4
+        );
+        for (List<Integer> permutation : permutations) {
+            List<int[][]> piecePermutation = new ArrayList<>();
+            for (Integer i : permutation) {
+                int[][] ok = pieces.get(i);
+                int[][] better = new int[ok.length][ok[0].length];
+                for (int j = 0; j < ok.length; j++) {
+                    for (int k = 0; k < ok[0].length; k++) {
+                        if (ok[j][k] == 0) continue;
+                        better[j][k] = i;
+                    }
+                }
+                piecePermutation.add(better);
+            }
+
+            Shape.solveAll(new int[][] {
+                    {0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0},
+                    {0, 5, 0, 0, 0, 0},
+                    {0, 5, 5, 0, 0, 0},
+                    {0, 5, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0}
+            }, piecePermutation, 0, new int[][]{
+                    {1, 0, 1, 1, 1, 1},
+                    {1, 0, 0, 1, 0, 0},
+                    {0, 1, 1, 1, 1, 0},
+                    {1, 0, 1, 0, 0, 1},
+                    {0, 1, 1, 1, 0, 0},
+                    {1, 0, 1, 0, 0, 0}
+            });
+        }
+    }
+
     public Genius3() throws IOException {
         List<int[][]> pieces = List.of(
-                new int[][]{{4, 4, 4, 4}},             // 1x4
+                new int[][]{{6, 6, 6, 6}},             // 1x4
                 new int[][]{{1}},                      // 1x1
-                new int[][]{{2, 2}},                   // 1x2
-                new int[][]{{3, 3, 3}},                // 1x3
-                new int[][]{{5, 5}, {5, 5}},           // 2x2
-                new int[][]{{6, 6}, {6, 0}},           // Irregular 1
+                new int[][]{{8, 8}},                   // 1x2
+                new int[][]{{9, 9, 9}},                // 1x3
+                new int[][]{{4, 4}, {4, 4}},           // 2x2
+                new int[][]{{2, 2}, {2, 0}},           // Irregular 1
                 new int[][]{{7, 7, 0}, {0, 7, 7}},     // Irregular 2
-                new int[][]{{8, 0}, {8, 0}, {8, 8}},   // Irregular 3
-                new int[][]{{0, 9, 0}, {9, 9, 9}}      // Irregular 4
+                new int[][]{{3, 0}, {3, 0}, {3, 3}}   // Irregular 3
+                //new int[][]{{0, 9, 0}, {9, 9, 9}}      // Irregular 4
         );
 
         List<int[][]> testSeeIfMyCodeActuallyWorks = new ArrayList<>() {{
             this.add(new int[][]{{1, 1}, {1, 0}}); //
         }};
 
+        int[][] blah = new int[][] {
+                {6, 6, 6, 6, 8, 8},
+                {3, 3, 3, 1, 0, 8},
+                {0, 5, 3, 7, 2, 2},
+                {0, 5, 5, 7, 7, 2},
+                {0, 5, 4, 4, 7, 0},
+                {0, 0, 4, 4, 0, 0}
+        };
+
+        System.out.println(hailMary());
+
         Shape.total = 0;
-        Shape.solveAll(new int[6][6], pieces, 0, new int[][]{
+        Shape.solveAll(new int[][] {
+                {0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0},
+                {0, 5, 0, 0, 0, 0},
+                {0, 5, 5, 0, 0, 0},
+                {0, 5, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0}
+        }, pieces, 0, new int[][]{
                 {1, 0, 1, 1, 1, 1},
                 {1, 0, 0, 1, 0, 0},
                 {0, 1, 1, 1, 1, 0},
@@ -91,6 +162,8 @@ public class Genius3 {
                 {0, 1, 1, 1, 0, 0},
                 {1, 0, 1, 0, 0, 0}
         });
+
+        //generatePermutationsOfPieces();
 
         HashMap<Integer, Integer> test = new HashMap<>() {{
             this.put(1, 4);
@@ -193,6 +266,19 @@ public class Genius3 {
         dfs(grid, visited, row, col + 1, target);
     }
 
+    public static Genius3Validator hailMary() {
+        int[][] yippee = {
+                {6, 6, 6, 6, 8, 8},
+                {3, 3, 3, 1, 0, 8},
+                {0, 5, 3, 7, 2, 2},
+                {9, 5, 5, 7, 7, 2},
+                {9, 5, 4, 4, 7, 0},
+                {9, 0, 4, 4, 0, 0}
+        };
+
+        return validateGenius3(yippee);
+    }
+
     public static Genius3Validator validateGenius3(int[][] grid) {
         Genius3Validator validator = new Genius3Validator();
         validator.gridSize = grid.length == 6 && grid[0].length == 6 ? ValidationState.PASSED : ValidationState.FAILED;
@@ -207,14 +293,21 @@ public class Genius3 {
         validator.countsValid = counts.get(0) == 7 ? ValidationState.PASSED : ValidationState.FAILED;
         validator.containsCorrectShapeSizes = (areContentsEqual(List.of(1, 2, 3, 3, 4, 4, 4, 4, 4, 7), counts.values())) ? ValidationState.PASSED : ValidationState.FAILED;
 
-        List<List<Integer>> ac2 = generatePermutations(List.of(0, 1, 2, 3, 4, 5, 6, 7));
-        List<List<Integer>> ac3 = generatePermutations(List.of(0, 1));
-        List<List<Integer>> ac4 = generatePermutations(List.of(0, 1));
-        List<List<Integer>> dn2 = generatePermutations(List.of(0, 1, 2, 3, 4, 5));
-        List<List<Integer>> dn3 = generatePermutations(List.of(0, 1, 2, 3));
-        List<List<Integer>> dn4 = generatePermutations(List.of(0, 1));
+        List<List<Integer>> ac2 = generatePermutations(List.of(0, 1, 2, 3, 4, 5, 6, 7), new Predicate<List<Integer>>() {
+            @Override
+            public boolean test(List<Integer> integers) {
+                if (integers.get(0) == 0 || integers.get(0) == 6) return false;
+                if (integers.get(2) == 0 || integers.get(2) == 6) return false;
+                return integers.get(6) != 0 && integers.get(6) != 6;
+            }
+        });
+        List<List<Integer>> ac3 = generatePermutations(List.of(0, 1), integers -> true);
+        List<List<Integer>> ac4 = generatePermutations(List.of(0, 1), integers -> true);
+        List<List<Integer>> dn2 = generatePermutations(List.of(0, 1, 2, 3, 4, 5), integers -> integers.getFirst() != 5);
+        List<List<Integer>> dn3 = generatePermutations(List.of(0, 1, 2, 3), integers -> integers.get(2) != 1);
+        List<List<Integer>> dn4 = List.of(List.of(0, 1)); //generatePermutations(List.of(0, 1));
 
-        System.out.println(ac2.size() + "*" + ac3.size() + "*" + ac4.size() + "*" + dn2.size() + "*" + dn3.size() + "*" + dn4.size());
+        //System.out.println(ac2.size() + "*" + ac3.size() + "*" + ac4.size() + "*" + dn2.size() + "*" + dn3.size() + "*" + dn4.size());
         int permutations = 0;
 
         int[] counter = new int[10];
@@ -222,19 +315,36 @@ public class Genius3 {
         for (List<Integer> across2Permutations : ac2) {
             List<GridVector> ac2Vectors = fromPermutation(across2Permutations, ACROSS_2_VECTORS);
             int oneAcross = extractVector(ac2Vectors.get(0).from, ac2Vectors.get(0).to, grid);
-            if (!(10 <= oneAcross && oneAcross < 20)) continue;
-            if (!(oneAcross == 10 || oneAcross == 15)) continue;
+            if (oneAcross != 10) {
+                //System.out.println("oneAcross: " + oneAcross);
+                continue;
+            }
             int twoAcross = extractVector(ac2Vectors.get(1).from, ac2Vectors.get(1).to, grid);
-            if (!(twoAcross == 11 || twoAcross == 22 || twoAcross == 33 || twoAcross == 44)) continue;
+            if (!(twoAcross == 11 || twoAcross == 22 || twoAcross == 33 || twoAcross == 44)) {
+                //System.out.println("twoAcross: " + twoAcross);
+                continue;
+            }
             int threeAcross = extractVector(ac2Vectors.get(2).from, ac2Vectors.get(2).to, grid);
-            if (threeAcross != 37) continue;
+            if (threeAcross != 37) {
+                //System.out.println("threeAcross: " + threeAcross);
+                continue;
+            }
             int fourAcross = extractVector(ac2Vectors.get(3).from, ac2Vectors.get(3).to, grid);
-            if (fourAcross != 54) continue;
+            if (fourAcross != 54 && fourAcross != 81) {
+                System.out.println("fouracross: " + fourAcross);
+                continue;
+            }
             int fiveAcross = extractVector(ac2Vectors.get(4).from, ac2Vectors.get(4).to, grid);
             int sixAcross = extractVector(ac2Vectors.get(5).from, ac2Vectors.get(5).to, grid);
-            if (!(sixAcross >= 60)) continue;
+            if (!(sixAcross >= 60)) {
+                System.out.println("sixacross: " + sixAcross);
+                continue;
+            }
             int sevenAcross = extractVector(ac2Vectors.get(6).from, ac2Vectors.get(6).to, grid);
-            if (!(sevenAcross == 85 || sevenAcross == 90)) continue;
+            if (sevenAcross != 90) {
+                System.out.println("sevenacross: " + sevenAcross);
+                continue;
+            }
             int eightAcross = extractVector(ac2Vectors.get(7).from, ac2Vectors.get(7).to, grid);
             if (!updateCounts(counter, oneAcross, twoAcross, threeAcross, fourAcross, fiveAcross, sixAcross, sevenAcross, eightAcross)) {
                 continue;
@@ -243,42 +353,77 @@ public class Genius3 {
             for (List<Integer> across3Permutations : ac3) {
                 List<GridVector> ac3Vectors = fromPermutation(across3Permutations, ACROSS_3_VECTORS);
                 int nineAcross = extractVector(ac3Vectors.get(0).from, ac3Vectors.get(0).to, grid);
-                if (!(nineAcross == 111 || nineAcross == 222 || nineAcross == 333 || nineAcross == 444)) continue;
+               /* if (!(nineAcross == 111 || nineAcross == 222 || nineAcross == 333)) {
+                    System.out.println("nineAcross: " + nineAcross);
+                    continue;
+                }*/
                 int tenAcross = extractVector(ac3Vectors.get(1).from, ac3Vectors.get(1).to, grid);
-                if (!(tenAcross >= 570 && tenAcross < 800)) continue;
+                /*if (tenAcross != 470) {
+                    System.out.println("tenAcross: " + tenAcross);
+                    continue;
+                }*/
                 if (!updateCounts(counter, nineAcross, tenAcross)) continue;
 
 
                 for (List<Integer> across4Permutations : ac4) {
                     List<GridVector> ac4Vectors = fromPermutation(across4Permutations, ACROSS_4_VECTORS);
                     int elevenAcross = extractVector(ac4Vectors.get(0).from, ac4Vectors.get(0).to, grid);
-                    if (!(elevenAcross >= 2090)) continue;
+                    if (!(elevenAcross >= 2090)) {
+                        System.out.println("elevenAcross: " + elevenAcross);
+                        continue;
+                    }
                     int twelveAcross = extractVector(ac4Vectors.get(1).from, ac4Vectors.get(1).to, grid);
-                    if (!updateCounts(counter, elevenAcross, twelveAcross)) continue;
+                    if (!updateCounts(counter, elevenAcross, twelveAcross)) {
+                        continue;
+                    }
 
                     for (List<Integer> down2Permutations : dn2) {
                         List<GridVector> dn2Vectors = fromPermutation(down2Permutations, DOWN_2_VECTORS);
 
                         int thirteenDown = extractVector(dn2Vectors.get(0).from, dn2Vectors.get(0).to, grid);
-                        if (thirteenDown != 27) continue;
-                        if (thirteenDown != 27 && thirteenDown != 64) continue;
+                        if (thirteenDown != 27) {
+                            System.out.println("thirteenDown: " + thirteenDown);
+                            continue;
+                        }
                         int fourteenDown = extractVector(dn2Vectors.get(1).from, dn2Vectors.get(1).to, grid);
-                        if (!(fourteenDown >= 33)) continue;
-                        if (fourteenDown % 2 != 0) continue;
-                        if (fourteenDown % 11 != 0) continue;
+                        if (!(fourteenDown >= 33)) {
+                            System.out.println("fourteenDown: " + fourteenDown);
+                            continue;
+                        }
+                        if (fourteenDown % 2 != 0) {
+                            System.out.println("fourteenDown % 2 != 0: " + fourteenDown);
+                            continue;
+                        }
+                        if (fourteenDown % 11 != 0) {
+                            System.out.println("fourteenDown % 11 != 0: " + fourteenDown);
+                            continue;
+                        }
                         int fifteenDown = extractVector(dn2Vectors.get(2).from, dn2Vectors.get(2).to, grid);
-                        if (fifteenDown != 50) continue;
-                        if (fifteenDown % 5 != 0) continue;
+                        if (fifteenDown != 50) {
+                            System.out.println("fifteenDown: " + fifteenDown);
+                            continue;
+                        }
                         int sixteenDown = extractVector(dn2Vectors.get(3).from, dn2Vectors.get(3).to, grid);
-                        if (sixteenDown != 55) continue;
-                        if (Arrays.stream(fibonacci2Digit).noneMatch(i -> i == sixteenDown)) continue;
+                        if (sixteenDown != 55) {
+                            System.out.println("sixteenDown: " + sixteenDown);
+                            continue;
+                        }
                         int seventeenDown = extractVector(dn2Vectors.get(4).from, dn2Vectors.get(4).to, grid);
-                        if (!(seventeenDown == 61 || seventeenDown == 67 || seventeenDown == 71 || seventeenDown == 73)) continue;
+                        if (!(seventeenDown == 61 || seventeenDown == 67 || seventeenDown == 71 || seventeenDown == 73)) {
+                            System.out.println("seventeenDown: " + seventeenDown);
+                            continue;
+                        }
                         int eighteenDown = extractVector(dn2Vectors.get(5).from, dn2Vectors.get(5).to, grid);
-                        if (!(sevenAcross >= eighteenDown + 10)) continue;
-                        if (!(eighteenDown < 80)) continue;
+                        if (!(sevenAcross >= eighteenDown + 10)) {
+                            System.out.println("eighteenDown + 10 < sevenAcross: " + eighteenDown);
+                            continue;
+                        }
+                        if (eighteenDown != 80) {
+                            System.out.println("eighteendown: " + eighteenDown);
+                            continue;
+                        }
 
-                        if (List.of(thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown).stream().anyMatch(integer -> {
+                        if (Stream.of(thirteenDown, fourteenDown, fifteenDown, sixteenDown, seventeenDown, eighteenDown).anyMatch(integer -> {
                             String s = String.valueOf(integer);
                             return s.startsWith("9") || s.startsWith("1");
                         })) {
@@ -291,13 +436,25 @@ public class Genius3 {
                         for (List<Integer> down3Permutations : dn3) {
                             List<GridVector> dn3Vectors = fromPermutation(down3Permutations, DOWN_3_VECTORS);
                             int nineteenDown = extractVector(dn3Vectors.get(0).from, dn3Vectors.get(0).to, grid);
-                            if (!(nineteenDown > 190 && nineteenDown < 230)) continue;
+                            if (!(nineteenDown >= 196 && nineteenDown <= 204)) {
+                                System.out.println("nineteenDown: " + nineteenDown);
+                                continue;
+                            }
                             int twentyDown = extractVector(dn3Vectors.get(1).from, dn3Vectors.get(1).to, grid);
-                            if (twentyDown != 630) continue;
-                            if (Arrays.stream(triangularMultipleOf7).noneMatch(i -> i == twentyDown)) continue;
+                            if (twentyDown != 630) {
+                                System.out.println("twentyDown: " + twentyDown);
+                                continue;
+                            }
                             int twentyOneDown = extractVector(dn3Vectors.get(2).from, dn3Vectors.get(2).to, grid);
+                            if (!(twentyOneDown < 904)) {
+                                System.out.println("twentyOneDown: " + twentyOneDown);
+                                continue;
+                            }
                             int twentyTwoDown = extractVector(dn3Vectors.get(3).from, dn3Vectors.get(3).to, grid);
-                            if (twentyTwoDown != 999) continue;
+                            if (twentyTwoDown != 999) {
+                                System.out.println("twentyTwoDown: " + twentyTwoDown);
+                                continue;
+                            }
 
                             if (!updateCounts(counter, nineteenDown, twentyDown, twentyOneDown, twentyTwoDown))
                                 continue;
@@ -305,8 +462,15 @@ public class Genius3 {
                             for (List<Integer> down4Permutations : dn4) {
                                 List<GridVector> dn4Vectors = fromPermutation(down4Permutations, DOWN_4_VECTORS);
                                 int twentyThreeDown = extractVector(dn4Vectors.get(0).from, dn4Vectors.get(0).to, grid);
+                                if (!(twentyThreeDown >= 1155)) {
+                                    System.out.println("twentyThreeDown: " + twentyThreeDown);
+                                    continue;
+                                }
                                 int twentyFourDown = extractVector(dn4Vectors.get(1).from, dn4Vectors.get(1).to, grid);
-                                if (!(twentyFourDown > 3535 && twentyFourDown < 8100)) continue;
+                                if (!(twentyFourDown > 3535 && twentyFourDown < 8100)) {
+                                    System.out.println("twentyFourDown: " + twentyFourDown);
+                                    continue;
+                                }
                                 if (!updateCounts(counter, twentyThreeDown, twentyFourDown)) continue;
 
                                 permutations++;
@@ -345,7 +509,7 @@ public class Genius3 {
         //if () return false;
         //if (!(values[0] == 10 || values[0] == 15)) return false;
         //if (!(values[1] == 11 || values[1] == 22 || values[1] == 33 || values[1] == 44)) return false;
-        if (values[3] != 54) return false;
+        /*if (values[3] != 54) return false;
         if (!(values[5] >= 60)) return false;
         if (!(values[6] == 85 || values[6] == 90)) return false;
         if (!(values[8] == 111 || values[8] == 222 || values[8] == 333 || values[8] == 444)) return false;
@@ -361,39 +525,105 @@ public class Genius3 {
         if (values[19] != 630) return false;
         if (values[21] != 999) return false;
         // 23dn >= 101 - 222  ?????
-        if (!(values[23] > 3535 && values[23] < 8100)) return false;
+        if (!(values[23] > 3535 && values[23] < 8100)) return false;*/
 
-        if (values[8] + values[9] >= values[20]) return false;
-        if (values[6] - values[0] != values[17]) return false;
-        if (values[7] + values[14] + values[15] != values[18]) return false;
+        if (values[8] + values[9] >= values[20]) {
+            System.out.println(" if (values[8] + values[9] >= values[20]) {");
+            return false;
+        }
+        if (values[6] - values[0] != values[17]) {
+            System.out.println(" if (values[6] - values[0] != values[17]) {");
+            return false;
+        }
+        if (values[7] + values[14] + values[15] != values[18]) {
+            System.out.println(" if (values[7] + values[14] + values[15] != values[18]) {");
+            return false;
+        }
 
-        if (values[2] * values[12] != values[21]) return false;
-        if (values[0] * values[15] - values[17] != values[9]) return false;
-        if (values[1] * values[18] != values[10]) return false;
-        if (5 * values[0] != values[14]) return false;
+        if (values[2] * values[12] != values[21]) {
+            System.out.println(" if (values[2] * values[12] != values[21]) {");
+            return false;
+        }
+        if (values[0] * values[15] - values[17] != values[9]) {
+            System.out.println(" if (values[0] * values[15] - values[17] != values[9]) {");
+            return false;
+        }
+        if (values[1] * values[18] != values[10]) {
+            System.out.println(" if (values[1] * values[18] != values[10]) {");
+            return false;
+        }
+        if (5 * values[0] != values[14]) {
+            System.out.println(" if (5 * values[0] != values[14]) {");
+            return false;
+        }
 
-        if (values[13] / 2 != values[1]) return false;
-        if (values[19] / 7 == values[6]) return false;
-        if (!isPerfectSquare(values[23])) return false;
-        if ((int) Math.sqrt(values[23]) != values[5]) return false;
-        if (!isCube(values[12])) return false;
+        if (values[13] / 2 != values[1]) {
+            System.out.println(" if (values[13] / 2 != values[1]) {");
+            return false;
+        }
+        if (values[19] / 7 == values[6]) {
+            System.out.println(" if (values[19] / 7 == values[6]) {");
+            return false;
+        }
+        if (!isPerfectSquare(values[23])) {
+            System.out.println(" if (!isPerfectSquare(values[23])) {");
+            return false;
+        }
+        if ((int) Math.sqrt(values[23]) != values[5]) {
+            System.out.println(" if ((int) Math.sqrt(values[23]) != values[5]) {");
+            return false;
+        }
+        if (!isCube(values[12])) {
+            System.out.println(" if (!isCube(values[12])) {");
+            return false;
+        }
 
-        if (!isFibonacciNumber(values[15])) return false;
+        if (!isFibonacciNumber(values[15])) {
+            System.out.println(" if (!isFibonacciNumber(values[15])) {");
+            return false;
+        }
 
-        if (!isTriangularNumber(values[0])) return false;
-        if (!isTriangularNumber(values[19])) return false;
+        if (!isTriangularNumber(values[0])) {
+            System.out.println(" if (!isTriangularNumber(values[0])) {");
+            return false;
+        }
+        if (!isTriangularNumber(values[19])) {
+            System.out.println(" if (!isTriangularNumber(values[19])) {");
+            return false;
+        }
 
-        if (!(values[8] % values[2] == 0 && isPrime(values[2]))) return false;
-        if (values[12] % values[3] != 0) return false;
+        if (!(values[8] % values[2] == 0 && isPrime(values[2]))) {
+            System.out.println(" if (!(values[8] % values[2] == 0 && isPrime(values[2]))) {");
+            return false;
+        }
+        if (values[12] % values[3] != 0) {
+            System.out.println(" if (values[12] % values[3] != 0) {");
+            return false;
+        }
 
-        if (!isPrime(values[16])) return false;
+        if (!isPrime(values[16])) {
+            System.out.println(" if (!isPrime(values[16])) {");
+            return false;
+        }
         int[] clue8PrimeFactors = getPrimeFactors(values[7]);
         int[] clue5PrimeFactors = getPrimeFactors(values[4]);
-        if (!hasCommonElement(clue8PrimeFactors, clue5PrimeFactors)) return false;
+        if (!hasCommonElement(clue8PrimeFactors, clue5PrimeFactors)) {
+            System.out.println(" if (!hasCommonElement(clue8PrimeFactors, clue5PrimeFactors)) {");
+            return false;
+        }
 
-        if (!isPalindromic(values[8])) return false;
-        if (!isPalindromic(values[11])) return false;
-        if (!isPalindromic(values[13])) return false;
+        if (!isPalindromic(values[8])) {
+            System.out.println(" if (!isPalindromic(values[8])) {");
+            return false;
+        }
+        if (!isPalindromic(values[11])) {
+            System.out.println(" if (!isPalindromic(values[11])) {");
+            return false;
+        }
+        if (!isPalindromic(values[13])) {
+            System.out.println(" if (!isPalindromic(values[13])) {");
+            return false;
+        }
         return isPalindromic(values[22] / 35);
 
     }
@@ -500,14 +730,14 @@ public class Genius3 {
         }
     }
 
-    public static <T> List<List<T>> generatePermutations(List<T> list) {
+    public static <T> List<List<T>> generatePermutations(List<T> list, Predicate<List<T>> predicate) {
         List<List<T>> result = new ArrayList<>();
-        backtrack(list, new ArrayList<>(), result, new boolean[list.size()]);
+        backtrack(list, new ArrayList<>(), result, new boolean[list.size()], predicate);
         return result;
     }
 
-    private static <T> void backtrack(List<T> list, List<T> temp, List<List<T>> result, boolean[] used) {
-        if (temp.size() == list.size()) {
+    private static <T> void backtrack(List<T> list, List<T> temp, List<List<T>> result, boolean[] used, Predicate<List<T>> predicate) {
+        if (temp.size() == list.size() && predicate.test(temp)) {
             result.add(new ArrayList<>(temp));
             return;
         }
@@ -516,7 +746,7 @@ public class Genius3 {
             if (used[i]) continue;
             used[i] = true;
             temp.add(list.get(i));
-            backtrack(list, temp, result, used);
+            backtrack(list, temp, result, used, predicate);
             temp.removeLast();
             used[i] = false;
         }
